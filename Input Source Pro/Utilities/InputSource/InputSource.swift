@@ -71,9 +71,14 @@ class InputSource {
         }
 
         let updateStrategy: String = {
+            var shouldApplyFix = useCJKVFix
+            if #available(macOS 15, *) {
+                shouldApplyFix = false
+            }
+
             if isCJKVR {
                 // https://stackoverflow.com/a/60375569
-                if useCJKVFix,
+                if shouldApplyFix,
                    PermissionsVM.checkAccessibility(prompt: false),
                    let selectPreviousShortcut = Self.getSelectPreviousShortcut()
                 {
