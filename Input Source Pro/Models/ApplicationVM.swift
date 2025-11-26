@@ -53,9 +53,12 @@ extension ApplicationVM {
                 else { return Just(.from(app, preferencesVM: preferencesVM)).eraseToAnyPublisher() }
 
                 return Timer
-                    .interval(seconds: 1)
+                    .interval(seconds: 0.1)
                     .prepend(Date())
-                    .compactMap { _ in app.focusedUIElement(preferencesVM: preferencesVM) }
+                    .map { _ in app.focusedUIElement(preferencesVM: preferencesVM) }
+                    .prefix(6)
+                    .first(where: { $0 != nil })
+                    .append(nil)
                     .first()
                     .flatMapLatest { _ in
                         app.watchAX([
