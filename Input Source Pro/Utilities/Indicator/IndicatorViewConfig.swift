@@ -161,7 +161,7 @@ struct IndicatorViewConfig {
             }()
             let height = ratio * width
 
-            make.size.equalTo(CGSize(width: width, height: height))
+            make.size.equalTo(CGSize(width: width, height: height)).priority(.medium)
         }
 
         return imageView
