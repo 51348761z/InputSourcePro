@@ -71,14 +71,24 @@ class InputSource {
         }
 
         let updateStrategy: String = {
-            var shouldApplyFix = useCJKVFix
             if #available(macOS 15, *) {
-                shouldApplyFix = false
+                if isCJKVR, let nonCJKV = Self.nonCJKVSource() {
+                    // Workaround for macOS 15+ IME stuck state:
+                    // Force a full context switch cycle (Target -> English -> Target)
+                    // to ensure the IME mode is correctly initialized.
+                    TISSelectInputSource(tisInputSource)
+                    TISSelectInputSource(nonCJKV.tisInputSource)
+                    TISSelectInputSource(tisInputSource)
+                    return "S15"
+                } else {
+                    TISSelectInputSource(tisInputSource)
+                    return "S0-15"
+                }
             }
 
             if isCJKVR {
                 // https://stackoverflow.com/a/60375569
-                if shouldApplyFix,
+                if useCJKVFix,
                    PermissionsVM.checkAccessibility(prompt: false),
                    let selectPreviousShortcut = Self.getSelectPreviousShortcut()
                 {
