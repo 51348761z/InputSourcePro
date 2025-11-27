@@ -44,6 +44,7 @@ extension ApplicationVM {
                 else { return NSWorkspace.shared.frontmostApplication }
                 return NSRunningApplication(processIdentifier: pid)
             }
+            .debounce(for: .milliseconds(100), scheduler: DispatchQueue.main)
             .removeDuplicates()
             .flatMapLatest { [weak self] (app: NSRunningApplication) -> AnyPublisher<AppKind, Never> in
                 guard let preferencesVM = self?.preferencesVM
